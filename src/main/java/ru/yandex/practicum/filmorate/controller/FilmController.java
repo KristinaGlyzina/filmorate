@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,7 +13,7 @@ import java.util.Map;
 @RestController
 @Slf4j
 public class FilmController {
-    private int nextId;
+    private int nextId = 1;
     private Map<Integer, Film> filmMap = new HashMap<>();
 
     @PostMapping(value = "/films")
@@ -55,21 +56,19 @@ public class FilmController {
     }
 
     @PutMapping(value = "/films/{id}")
-    public Film updateFilm(@PathVariable int id, @RequestBody Film updatedFilm) throws ValidationException {
-        Film existingFilm = filmMap.values().stream()
-                .filter(film -> film.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> {
-                    log.error("Film not found.");
-                    return new ValidationException("Film not found.");
-                });
+    public ResponseEntity<Film> updateFilm(@PathVariable int id, @RequestBody Film updatedFilm) throws ValidationException {
+        Film existingFilm = filmMap.get(id);
+        if (existingFilm == null) {
+            log.error("Film not found.");
+            throw new ValidationException("Film not found.");
+        }
 
         existingFilm.setName(updatedFilm.getName());
         existingFilm.setDescription(updatedFilm.getDescription());
         existingFilm.setDuration(updatedFilm.getDuration());
         existingFilm.setReleaseDate(updatedFilm.getReleaseDate());
 
-        return existingFilm;
+        return ResponseEntity.ok(existingFilm);
     }
 
     @GetMapping(value = "/films")

@@ -3,10 +3,14 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -53,32 +57,32 @@ public class UserController {
         return user;
     }
 
-    @PutMapping(value = "/users/{id}")
-    public User updateUser(@PathVariable int id, @RequestBody User updatedUser) throws ValidationException {
-        User existingUser = userMap.values().stream()
-                .filter(user -> user.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> {
-                    log.error("User not found with id: {}.", id);
-                    return new ValidationException("User not found.");
-                });
+    @PutMapping(value = "/users")
+    public ResponseEntity<User> updateUser(@RequestBody User updatedUser) throws ValidationException {
+        int id = updatedUser.getId();
+        User existingUser = userMap.get(id);
+        if (existingUser == null) {
+            log.error("User not found with id: {}.", id);
+            throw new ValidationException("User not found.");
+        }
         existingUser.setEmail(updatedUser.getEmail());
         existingUser.setLogin(updatedUser.getLogin());
         existingUser.setName(updatedUser.getName());
-        existingUser.setLogin(updatedUser.getLogin());
+        existingUser.setBirthday(updatedUser.getBirthday());
 
         log.info("User updated: {}.", existingUser);
 
-        return existingUser;
+        return ResponseEntity.ok(existingUser);
     }
 
-    @GetMapping(value = "users")
-    public Map<Integer, User> getAllUsers() throws ValidationException {
-        if (userMap == null || userMap.isEmpty()) {
+    @GetMapping(value = "/users")
+    public ResponseEntity<List<User>> getAllUsers() throws ValidationException {
+        List<User> users = new ArrayList<>(userMap.values());
+        if (users == null || users.isEmpty()) {
             log.error("List of users is empty.");
             throw new ValidationException("List of users is empty.");
         }
-        return userMap;
+        return ResponseEntity.ok(users);
     }
 
     private int getNextId() {
