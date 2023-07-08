@@ -1,65 +1,67 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/films")
 @Slf4j
 public class FilmController {
     private int nextId = 1;
     private Map<Integer, Film> filmMap = new HashMap<>();
 
-    @PostMapping(value = "/films")
-    public Film addFilm(@RequestBody Film film) throws ValidationException {
+    @PostMapping
+    public ResponseEntity<?> createFilm(@RequestBody Film film) throws ValidationException {
         if (filmMap.values().stream().anyMatch(f -> f.getName().equals(film.getName()))) {
-        throw new ValidationException("Film already exists in list.");
+            throw new ValidationException("Film already exists in the list.");
         }
 
         if (film.getName() == null || film.getName().isEmpty()) {
-            log.error("Film title cannot be empty.");
             throw new ValidationException("Film title cannot be empty.");
         }
 
         if (film.getDescription() == null) {
-            log.error("Film description is empty.");
             throw new ValidationException("Film description is empty.");
         }
 
-        if (film.getDescription() != null && film.getDescription().length() > 200) {
-            log.error("Film description maximum length exceeded.");
-            throw new ValidationException("Film description maximum length exceeded.");
+        if (film.getDescription().length() > 200) {
+            throw new ValidationException("Film description exceeds the maximum length.");
         }
 
-        LocalDate releaseDateLimit = LocalDate.of(1985, 12, 28);
+        LocalDate releaseDateLimit = LocalDate.of(1895, 12, 28);
         if (film.getReleaseDate().isBefore(releaseDateLimit)) {
-            log.error("Invalid film release date: {}.", film.getReleaseDate());
             throw new ValidationException("Invalid film release date.");
         }
 
         if (film.getDuration() <= 0) {
-            log.error("Film duration should be more, than '0'.");
-            throw new ValidationException("Film duration should be more, than '0'.");
+            throw new ValidationException("Film duration should be greater than zero.");
         }
 
         int id = getNextId();
         film.setId(id);
         filmMap.put(id, film);
 
-        return film;
+        log.info("Film created: {}.", film);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(film);
     }
 
-    @PutMapping(value = "/films/{id}")
-    public ResponseEntity<Film> updateFilm(@PathVariable int id, @RequestBody Film updatedFilm) throws ValidationException {
+    @PutMapping
+    public ResponseEntity<Film> updateFilm(@RequestBody Film updatedFilm) throws ValidationException {
+        int id = updatedFilm.getId();
         Film existingFilm = filmMap.get(id);
         if (existingFilm == null) {
-            log.error("Film not found.");
+            log.error("Film not found: {}.", id);
             throw new ValidationException("Film not found.");
         }
 
@@ -68,16 +70,19 @@ public class FilmController {
         existingFilm.setDuration(updatedFilm.getDuration());
         existingFilm.setReleaseDate(updatedFilm.getReleaseDate());
 
+        log.info("Film updated: {}.", existingFilm);
+
         return ResponseEntity.ok(existingFilm);
     }
 
-    @GetMapping(value = "/films")
-    public Map<Integer, Film> getAllFilms() throws ValidationException {
-        if (filmMap == null || filmMap.isEmpty()) {
+    @GetMapping
+    public ResponseEntity<List<Film>> getAllFilms() throws ValidationException {
+        List<Film> films = new ArrayList<>(filmMap.values());
+        if (films.isEmpty()) {
             log.error("List of films is empty.");
             throw new ValidationException("List of films is empty.");
         }
-        return filmMap;
+        return ResponseEntity.ok(films);
     }
 
     private int getNextId() {
