@@ -37,9 +37,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
-    @PutMapping
-    public ResponseEntity<User> updateUser(@RequestBody User updatedUser) throws ValidationException {
-        int id = updatedUser.getId();
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User updatedUser) throws ValidationException {
         User existingUser = userMap.get(id);
         if (existingUser == null) {
             log.error("User not found: {}.", id);

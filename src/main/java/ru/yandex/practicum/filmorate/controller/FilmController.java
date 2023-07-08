@@ -21,11 +21,53 @@ public class FilmController {
     private Map<Integer, Film> filmMap = new HashMap<>();
 
     @PostMapping
-    public ResponseEntity<?> createFilm(@RequestBody Film film) throws ValidationException {
+    public ResponseEntity<Film> createFilm(@RequestBody Film film) throws ValidationException {
+        validateFilm(film);
+
         if (filmMap.values().stream().anyMatch(f -> f.getName().equals(film.getName()))) {
-            throw new ValidationException("Film already exists in the list.");
+            throw new ValidationException("Film with the same name already exists.");
         }
 
+        int id = getNextId();
+        film.setId(id);
+        filmMap.put(id, film);
+
+        log.info("Film created: {}.", film);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(film);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Film> updateFilm(@PathVariable int id, @RequestBody Film updatedFilm) throws ValidationException {
+        Film existingFilm = filmMap.get(id);
+        if (existingFilm == null) {
+            log.error("Film not found: {}.", id);
+            throw new ValidationException("Film not found.");
+        }
+
+        validateFilm(updatedFilm);
+
+        existingFilm.setName(updatedFilm.getName());
+        existingFilm.setDescription(updatedFilm.getDescription());
+        existingFilm.setDuration(updatedFilm.getDuration());
+        existingFilm.setReleaseDate(updatedFilm.getReleaseDate());
+
+        log.info("Film updated: {}.", existingFilm);
+
+        return ResponseEntity.ok(existingFilm);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Film>> getAllFilms() throws ValidationException {
+        List<Film> films = new ArrayList<>(filmMap.values());
+        if (films.isEmpty()) {
+            log.error("List of films is empty.");
+            throw new ValidationException("List of films is empty.");
+        }
+        return ResponseEntity.ok(films);
+    }
+
+    private void validateFilm(Film film) throws ValidationException {
         if (film.getName() == null || film.getName().isEmpty()) {
             throw new ValidationException("Film title cannot be empty.");
         }
@@ -46,43 +88,6 @@ public class FilmController {
         if (film.getDuration() <= 0) {
             throw new ValidationException("Film duration should be greater than zero.");
         }
-
-        int id = getNextId();
-        film.setId(id);
-        filmMap.put(id, film);
-
-        log.info("Film created: {}.", film);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(film);
-    }
-
-    @PutMapping
-    public ResponseEntity<Film> updateFilm(@RequestBody Film updatedFilm) throws ValidationException {
-        int id = updatedFilm.getId();
-        Film existingFilm = filmMap.get(id);
-        if (existingFilm == null) {
-            log.error("Film not found: {}.", id);
-            throw new ValidationException("Film not found.");
-        }
-
-        existingFilm.setName(updatedFilm.getName());
-        existingFilm.setDescription(updatedFilm.getDescription());
-        existingFilm.setDuration(updatedFilm.getDuration());
-        existingFilm.setReleaseDate(updatedFilm.getReleaseDate());
-
-        log.info("Film updated: {}.", existingFilm);
-
-        return ResponseEntity.ok(existingFilm);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Film>> getAllFilms() throws ValidationException {
-        List<Film> films = new ArrayList<>(filmMap.values());
-        if (films.isEmpty()) {
-            log.error("List of films is empty.");
-            throw new ValidationException("List of films is empty.");
-        }
-        return ResponseEntity.ok(films);
     }
 
     private int getNextId() {
