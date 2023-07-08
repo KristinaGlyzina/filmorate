@@ -1,73 +1,68 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-/*
-Денис, привет!)
-у меня есть вопрос - в файле pom.xml у меня подсвечивается
-<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId> вот эта строка красным, у меня не получается это исправить
-			</plugin>
-		</plugins>
-	</build>
-	подскажи пожалуйста, как это можно исправить. ошибка: Plugin 'org.springframework.boot:spring-boot-maven-plugin:' not found
+import java.util.HashMap;
+import java.util.Map;
 
-Ну и конечно жду твоих комментариев и рекомендаций по исправлению моего кода ;)
- */
 @RestController
 @Slf4j
 public class FilmController {
-    private List<Film> filmList = new ArrayList<>();
-
+    private int nextId;
+    private Map<Integer, Film> filmMap = new HashMap<>();
 
     @PostMapping(value = "/films")
     public Film addFilm(@RequestBody Film film) throws ValidationException {
-        if (filmList.stream().anyMatch(f -> f.getName().equals(film.getName()))) {
+        if (filmMap.values().stream().anyMatch(f -> f.getName().equals(film.getName()))) {
         throw new ValidationException("Film already exists in list.");
         }
 
         if (film.getName() == null || film.getName().isEmpty()) {
+            log.error("Film title cannot be empty.");
             throw new ValidationException("Film title cannot be empty.");
         }
 
         if (film.getDescription() == null) {
+            log.error("Film description is empty.");
             throw new ValidationException("Film description is empty.");
         }
 
         if (film.getDescription() != null && film.getDescription().length() > 200) {
+            log.error("Film description maximum length exceeded.");
             throw new ValidationException("Film description maximum length exceeded.");
         }
 
         LocalDate releaseDateLimit = LocalDate.of(1985, 12, 28);
         if (film.getReleaseDate().isBefore(releaseDateLimit)) {
-            throw new ValidationException("Invalid film release date");
+            log.error("Invalid film release date: {}.", film.getReleaseDate());
+            throw new ValidationException("Invalid film release date.");
         }
 
         if (film.getDuration() <= 0) {
+            log.error("Film duration should be more, than '0'.");
             throw new ValidationException("Film duration should be more, than '0'.");
         }
-        filmList.add(film);
+
+        int id = getNextId();
+        film.setId(id);
+        filmMap.put(id, film);
 
         return film;
     }
 
     @PutMapping(value = "/films/{id}")
     public Film updateFilm(@PathVariable int id, @RequestBody Film updatedFilm) throws ValidationException {
-        Film existingFilm = filmList.stream()
+        Film existingFilm = filmMap.values().stream()
                 .filter(film -> film.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new ValidationException("Film not found."));
+                .orElseThrow(() -> {
+                    log.error("Film not found.");
+                    return new ValidationException("Film not found.");
+                });
 
         existingFilm.setName(updatedFilm.getName());
         existingFilm.setDescription(updatedFilm.getDescription());
@@ -78,11 +73,15 @@ public class FilmController {
     }
 
     @GetMapping(value = "/films")
-    public List<Film> getAllFilms() throws ValidationException {
-        if (filmList == null || filmList.isEmpty()) {
+    public Map<Integer, Film> getAllFilms() throws ValidationException {
+        if (filmMap == null || filmMap.isEmpty()) {
+            log.error("List of films is empty.");
             throw new ValidationException("List of films is empty.");
         }
-        return filmList;
+        return filmMap;
     }
 
+    private int getNextId() {
+        return nextId++;
+    }
 }

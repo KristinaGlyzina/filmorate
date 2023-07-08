@@ -1,109 +1,100 @@
 package ru.yandex.practicum.filmorate.testsController;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.yandex.practicum.filmorate.controller.UserController;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@RunWith(SpringRunner.class)
+@WebMvcTest(UserController.class)
 public class UserControllerTest {
-    private UserController userController;
 
-    @BeforeEach
-    public void setUp() {
-        userController = new UserController();
-    }
+    @Autowired
+    private MockMvc mockMvc;
 
     @Test
-    public void addUser() throws ValidationException {
-    User user = new User();
-    user.setName("name");
-    user.setLogin("login");
-    user.setEmail("test@example.com");
-    user.setBirthday(LocalDate.of(2001, 1, 1));
-    user.setId(1);
-
-    User addedUser = userController.createUser(user);
-
-    assertEquals(user, addedUser);
-    }
-
-    @Test
-    public void addUserEmptyEmail() {
+    public void createUser_ValidData() throws Exception {
         User user = new User();
-        user.setName("name");
-        user.setLogin("login");
-        user.setEmail("");
-        user.setBirthday(LocalDate.of(2001, 1, 1));
-        user.setId(2);
-
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
-    }
-
-    @Test
-    public void addUserEmailWithoutSymbol() {
-        User user = new User();
-        user.setName("name");
-        user.setLogin("login");
-        user.setEmail("testexample.com");
-        user.setBirthday(LocalDate.of(2001, 1, 1));
-        user.setId(3);
-
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
-    }
-
-    @Test
-    public void addUserEmptyLogin() {
-        User user = new User();
-        user.setName("name");
-        user.setLogin("");
         user.setEmail("test@example.com");
-        user.setBirthday(LocalDate.of(2001, 1, 1));
-        user.setId(4);
+        user.setLogin("testuser");
+        user.setName("Test User");
+        user.setBirthday(LocalDate.now().minusYears(30));
 
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(user)))
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void addUserLoginWithBlankSpace() {
+    public void createUser_InvalidEmail() throws Exception {
         User user = new User();
-        user.setName("name");
-        user.setLogin(" ");
+        user.setEmail("invalidemail");
+        user.setLogin("testuser");
+        user.setName("Test User");
+        user.setBirthday(LocalDate.now().minusYears(30));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(user)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createUser_InvalidLogin() throws Exception {
+        User user = new User();
         user.setEmail("test@example.com");
-        user.setBirthday(LocalDate.of(2001, 1, 1));
-        user.setId(5);
+        user.setLogin("test user");
+        user.setName("Test User");
+        user.setBirthday(LocalDate.now().minusYears(30));
 
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(user)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void addUserEmptyName() throws ValidationException {
+    public void createUser_EmptyName() throws Exception {
         User user = new User();
+        user.setEmail("test@example.com");
+        user.setLogin("test user");
         user.setName("");
-        user.setLogin("login");
-        user.setEmail("test@example.com");
-        user.setBirthday(LocalDate.of(2001, 1, 1));
-        user.setId(6);
+        user.setBirthday(LocalDate.now().minusYears(30));
 
-        User createdUser = userController.createUser(user);
-
-        assertEquals(user.getLogin(), createdUser.getName());
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(user)))
+                .andExpect(status().isOk());
     }
 
-    @Test
-    public void addUserInvalidBirthDate() throws ValidationException {
+    public void createUser_InvalidBirthday() throws Exception {
         User user = new User();
-        user.setName("name");
-        user.setLogin("login");
         user.setEmail("test@example.com");
-        user.setBirthday(LocalDate.of(2056, 1, 1));
-        user.setId(7);
+        user.setLogin("testuser");
+        user.setName("Test User");
+        user.setBirthday(LocalDate.now().plusYears(1));
 
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(user)))
+                .andExpect(status().isBadRequest());
+    }
+
+    private static String asJsonString(Object obj) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(obj);
     }
 }

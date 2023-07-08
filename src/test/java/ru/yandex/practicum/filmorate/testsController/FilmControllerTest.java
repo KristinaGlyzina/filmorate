@@ -1,83 +1,101 @@
 package ru.yandex.practicum.filmorate.testsController;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.controller.FilmController;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@RunWith(SpringRunner.class)
+@WebMvcTest(UserController.class)
 public class FilmControllerTest {
-    private FilmController filmController;
 
-    @BeforeEach
-    public void setUp() {
-        filmController = new FilmController();
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    public void addFilm_ValidData() throws Exception {
+        Film film = new Film();
+        film.setName("Film Name");
+        film.setDescription("Film Description");
+        film.setReleaseDate(LocalDate.of(2022, 1, 1));
+        film.setDuration(120);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/films")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(film)))
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void addFilm() throws ValidationException {
-    Film film = new Film();
-    film.setName("name");
-    film.setDescription("description");
-    film.setId(1);
-    film.setDuration(120);
-    film.setReleaseDate(LocalDate.of(2020, 1, 1));
-
-    Film addedFilm = filmController.addFilm(film);
-
-    assertEquals(film, addedFilm);
-    }
-
-    @Test
-    public void addFilmEmptyName() {
+    public void addFilm_EmptyName() throws Exception {
         Film film = new Film();
         film.setName("");
-        film.setDescription("film description");
-        film.setId(2);
+        film.setDescription("Film Description");
+        film.setReleaseDate(LocalDate.of(2022, 1, 1));
         film.setDuration(120);
-        film.setReleaseDate(LocalDate.of(2020, 1, 1));
 
-        assertThrows(ValidationException.class, () -> filmController.addFilm(film));
+        mockMvc.perform(MockMvcRequestBuilders.post("/films")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(film)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void addFilmLongDescription() {
+    public void addFilm_LongDescription() throws Exception {
         Film film = new Film();
-        film.setName("name");
-        film.setDescription("Введение в анализ данных — процесс извлечения, очистки, преобразования и моделирования данных для получения полезной информации. Он включает в себя широкий спектр методов и инструментов, таких как статистический анализ, машинное обучение, визуализация данных и многое другое. Анализ данных используется во многих областях, включая бизнес, науку, маркетинг, финансы и здравоохранение, для принятия информированных решений и выявления скрытых закономерностей и трендов. Он играет важную роль в современном мире, где данные становятся все более объемными и сложными. Владение навыками анализа данных может открыть двери к множеству возможностей и улучшить карьерные перспективы.");
-        film.setId(3);
+        film.setName("");
+        film.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel urna elementum, gravida turpis sit amet, lobortis turpis. Suspendisse sit amet sapien est. Nunc a finibus lacus. Donec aliquam aliquam nunc, ac feugiat nisl tincidunt nec. Proin ut enim ligula. Sed vestibulum ullamcorper neque, at eleifend ligula varius id. Sed feugiat, erat nec faucibus aliquet, risus risus varius metus, a varius nibh velit a elit. Nam rutrum metus quis lorem lacinia hendrerit.");
+        film.setReleaseDate(LocalDate.of(2022, 1, 1));
         film.setDuration(120);
-        film.setReleaseDate(LocalDate.of(2020, 1, 1));
 
-        assertThrows(ValidationException.class, () -> filmController.addFilm(film));
+        mockMvc.perform(MockMvcRequestBuilders.post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(film)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void addFilmInvalidReleaseDate() {
+    public void testAddFilm_InvalidReleaseDate() throws Exception {
         Film film = new Film();
-        film.setName("name");
-        film.setDescription("Введение в анализ данных — процесс извлечения, очистки, преобразования и моделирования данных для получения полезной информации. Он включает в себя широкий спектр методов и инструментов, таких как статистический анализ, машинное обучение, визуализация данных и многое другое. Анализ данных используется во многих областях, включая бизнес, науку, маркетинг, финансы и здравоохранение, для принятия информированных решений и выявления скрытых закономерностей и трендов. Он играет важную роль в современном мире, где данные становятся все более объемными и сложными. Владение навыками анализа данных может открыть двери к множеству возможностей и улучшить карьерные перспективы.");
-        film.setId(4);
+        film.setName("Film Name");
+        film.setDescription("Film Description");
+        film.setReleaseDate(LocalDate.of(1800, 1, 1));
         film.setDuration(120);
-        film.setReleaseDate(LocalDate.of(1576, 1, 1));
 
-        assertThrows(ValidationException.class, () -> filmController.addFilm(film));
+        mockMvc.perform(MockMvcRequestBuilders.post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(film)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void addFilmInvalidDuration() {
+    public void testAddFilm_NegativeDuration() throws Exception {
         Film film = new Film();
-        film.setName("name");
-        film.setDescription("Введение в анализ данных — процесс извлечения, очистки, преобразования и моделирования данных для получения полезной информации. Он включает в себя широкий спектр методов и инструментов, таких как статистический анализ, машинное обучение, визуализация данных и многое другое. Анализ данных используется во многих областях, включая бизнес, науку, маркетинг, финансы и здравоохранение, для принятия информированных решений и выявления скрытых закономерностей и трендов. Он играет важную роль в современном мире, где данные становятся все более объемными и сложными. Владение навыками анализа данных может открыть двери к множеству возможностей и улучшить карьерные перспективы.");
-        film.setId(4);
-        film.setDuration(0);
-        film.setReleaseDate(LocalDate.of(1576, 1, 1));
+        film.setName("Film Name");
+        film.setDescription("Film Description");
+        film.setReleaseDate(LocalDate.of(2022, 1, 1));
+        film.setDuration(-120);
 
-        assertThrows(ValidationException.class, () -> filmController.addFilm(film));
+        mockMvc.perform(MockMvcRequestBuilders.post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(film)))
+                .andExpect(status().isBadRequest());
+    }
+
+    private static String asJsonString(Object obj) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(obj);
     }
 }
