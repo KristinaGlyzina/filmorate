@@ -20,7 +20,7 @@ public class UserController {
     private Map<Integer, User> userMap = new HashMap<>();
     private int nextId = 1;
 
-    @PostMapping(value = "/users")
+    @PostMapping
     public User createUser(@RequestBody User user) throws ValidationException {
         if (user.getEmail() == null || user.getEmail().isEmpty() || !user.getEmail().contains("@")) {
             log.error("Invalid email: {}.", user.getEmail());
@@ -51,7 +51,7 @@ public class UserController {
         return user;
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping
     public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User updatedUser) throws ValidationException {
         int updatedUserId = updatedUser.getId();
         User existingUser = userMap.get(updatedUserId);
@@ -81,7 +81,7 @@ public class UserController {
         return ResponseEntity.ok(existingUser);
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>(userMap.values());
         return users;
