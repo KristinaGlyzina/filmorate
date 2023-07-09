@@ -16,7 +16,6 @@ import java.util.Map;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
-
     private Map<Integer, User> userMap = new HashMap<>();
     private int nextId = 1;
 
@@ -66,7 +65,7 @@ public class UserController {
             throw new ValidationException("Invalid email.");
         }
 
-        if (updatedUser.getLogin() == null ||  updatedUser.getLogin().isEmpty() || updatedUser.getLogin().contains(" ")) {
+        if (updatedUser.getLogin() == null || updatedUser.getLogin().isEmpty() || updatedUser.getLogin().contains(" ")) {
             log.error("Invalid login: {}.", updatedUser.getLogin());
             throw new ValidationException("Invalid login.");
         }

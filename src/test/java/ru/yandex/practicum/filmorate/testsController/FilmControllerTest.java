@@ -10,8 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.yandex.practicum.filmorate.FilmorateApplication;
-import ru.yandex.practicum.filmorate.FilmorateApplicationTests;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -22,7 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest(UserController.class)
 public class FilmControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -35,8 +32,8 @@ public class FilmControllerTest {
         film.setDuration(120);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(film)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(film)))
                 .andExpect(status().isOk());
     }
 
@@ -49,8 +46,8 @@ public class FilmControllerTest {
         film.setDuration(120);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(film)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(film)))
                 .andExpect(status().isBadRequest());
     }
 
