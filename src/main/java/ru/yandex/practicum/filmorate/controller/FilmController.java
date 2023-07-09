@@ -49,7 +49,7 @@ public class FilmController {
 
         filmMap.put(id, film);
 
-        log.info("User created: {}.", film);
+        log.info("Film created: {}.", film);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -88,9 +88,6 @@ public class FilmController {
         existingFilm.setDescription(updatedFilm.getDescription());
         existingFilm.setDuration(updatedFilm.getDuration());
         existingFilm.setReleaseDate(updatedFilm.getReleaseDate());
-
-        int rate = 0;
-        existingFilm.setRate(updatedFilm.getRate());
 
         filmMap.put(existingFilm.getId(), existingFilm);
 
