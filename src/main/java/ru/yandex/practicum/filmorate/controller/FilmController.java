@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,8 +21,8 @@ public class FilmController {
     private int nextId = 1;
     private Map<Integer, Film> filmMap = new HashMap<>();
 
-    @PostMapping(value = "/films")
-    public ResponseEntity<?> createFilm(@RequestBody Film film) throws ValidationException {
+    @PostMapping
+    public Film createFilm(@RequestBody Film film) throws ValidationException {
 
         if (film.getName() == null || film.getName().isEmpty()) {
             log.error("Film title cannot be empty.");
@@ -51,11 +52,11 @@ public class FilmController {
 
         log.info("Film created: {}.", film);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return film;
     }
 
-    @PutMapping(value = "/films/{id}")
-    public ResponseEntity<?> updateFilm(@PathVariable int id, @RequestBody Film updatedFilm) throws ValidationException {
+    @PutMapping
+    public ResponseEntity<?> updateFilm(@RequestBody Film updatedFilm) throws ValidationException {
 
         if (updatedFilm.getName() == null || updatedFilm.getName().isEmpty()) {
             log.error("Film title cannot be empty.");
@@ -78,9 +79,11 @@ public class FilmController {
             throw new ValidationException("Film duration should be greater than zero.");
         }
 
-        Film existingFilm = filmMap.get(id);
+        int updatedFilmId = updatedFilm.getId();
+        Film existingFilm = filmMap.get(updatedFilmId);
+
         if (existingFilm == null) {
-            log.error("Film not found: {}.", id);
+            log.error("Film not found: {}.", updatedFilmId);
             throw new ValidationException("Film not found.");
         }
         existingFilm.setId(updatedFilm.getId());
@@ -96,7 +99,7 @@ public class FilmController {
         return ResponseEntity.ok(existingFilm);
     }
 
-    @GetMapping(value = "/films")
+    @GetMapping
     public ResponseEntity<List<Film>> getAllFilms() throws ValidationException {
         List<Film> films = new ArrayList<>(filmMap.values());
         if (films.isEmpty()) {

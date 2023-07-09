@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User updatedUser) throws ValidationException {
+    public ResponseEntity<User> updateUser(@RequestBody User updatedUser) throws ValidationException {
         int updatedUserId = updatedUser.getId();
         User existingUser = userMap.get(updatedUserId);
 
