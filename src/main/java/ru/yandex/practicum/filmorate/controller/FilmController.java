@@ -96,7 +96,7 @@ public class FilmController {
         return ResponseEntity.ok(existingFilm);
     }
 
-    @GetMapping(value = "/clients")
+    @GetMapping(value = "/films")
     public ResponseEntity<List<Film>> getAllFilms() throws ValidationException {
         List<Film> films = new ArrayList<>(filmMap.values());
         if (films.isEmpty()) {

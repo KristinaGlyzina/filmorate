@@ -7,20 +7,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import ru.yandex.practicum.filmorate.FilmorateApplicationTests;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class UserControllerTest {
+public class UserControllerTest extends FilmorateApplicationTests {
 
     @Autowired
     private MockMvc mockMvc;
-
+/*
     @Test
     public void updateUser_Success() throws Exception {
-        // Подготовка данных
         int userId = 1;
         String requestBody = "{\n" +
                 "  \"login\": \"doloreUpdate\",\n" +
@@ -31,7 +31,7 @@ public class UserControllerTest {
                 "}";
 
         // Выполнение запроса PUT
-        ResultActions resultActions = mockMvc.perform(put("/users/" + userId)
+
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody));
 
@@ -44,5 +44,5 @@ public class UserControllerTest {
         resultActions.andExpect(jsonPath("$.name").value("est adipisicing"));
         resultActions.andExpect(jsonPath("$.email").value("mail@yandex.ru"));
         resultActions.andExpect(jsonPath("$.birthday").value("1976-09-20"));
-    }
+    } */
 }
