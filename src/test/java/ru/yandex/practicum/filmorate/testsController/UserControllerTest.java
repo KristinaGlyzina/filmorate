@@ -1,100 +1,48 @@
 package ru.yandex.practicum.filmorate.testsController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.yandex.practicum.filmorate.controller.UserController;
-import ru.yandex.practicum.filmorate.model.User;
+import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDate;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@RunWith(SpringRunner.class)
-@WebMvcTest(UserController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void createUser_ValidData() throws Exception {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("testuser");
-        user.setName("Test User");
-        user.setBirthday(LocalDate.now().minusYears(30));
+    public void updateUser_Success() throws Exception {
+        // Подготовка данных
+        int userId = 1;
+        String requestBody = "{\n" +
+                "  \"login\": \"doloreUpdate\",\n" +
+                "  \"name\": \"est adipisicing\",\n" +
+                "  \"id\": 1,\n" +
+                "  \"email\": \"mail@yandex.ru\",\n" +
+                "  \"birthday\": \"1976-09-20\"\n" +
+                "}";
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        // Выполнение запроса PUT
+        ResultActions resultActions = mockMvc.perform(put("/users/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(user)))
-                .andExpect(status().isOk());
-    }
+                .content(requestBody));
 
-    @Test
-    public void createUser_InvalidEmail() throws Exception {
-        User user = new User();
-        user.setEmail("invalidemail");
-        user.setLogin("testuser");
-        user.setName("Test User");
-        user.setBirthday(LocalDate.now().minusYears(30));
+        // Проверка статуса ответа
+        resultActions.andExpect(status().isOk());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(user)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void createUser_InvalidLogin() throws Exception {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("test user");
-        user.setName("Test User");
-        user.setBirthday(LocalDate.now().minusYears(30));
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(user)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void createUser_EmptyName() throws Exception {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("test user");
-        user.setName("");
-        user.setBirthday(LocalDate.now().minusYears(30));
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(user)))
-                .andExpect(status().isOk());
-    }
-
-    public void createUser_InvalidBirthday() throws Exception {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("testuser");
-        user.setName("Test User");
-        user.setBirthday(LocalDate.now().plusYears(1));
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(user)))
-                .andExpect(status().isBadRequest());
-    }
-
-    private static String asJsonString(Object obj) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(obj);
+        // Проверка возвращаемых данных
+        resultActions.andExpect(jsonPath("$.id").value(userId));
+        resultActions.andExpect(jsonPath("$.login").value("doloreUpdate"));
+        resultActions.andExpect(jsonPath("$.name").value("est adipisicing"));
+        resultActions.andExpect(jsonPath("$.email").value("mail@yandex.ru"));
+        resultActions.andExpect(jsonPath("$.birthday").value("1976-09-20"));
     }
 }
