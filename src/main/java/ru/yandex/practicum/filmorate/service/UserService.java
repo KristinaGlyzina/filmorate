@@ -66,7 +66,7 @@ public class UserService {
             friend.getFriends().remove(userToDelete);
         }
 
-        log.info(String.format("User %s deleted friend %s.", user.getName(), friend.getName()));
+        log.info(String.format("The user %s deleted friend %s.", user.getName(), friend.getName()));
     }
 
 

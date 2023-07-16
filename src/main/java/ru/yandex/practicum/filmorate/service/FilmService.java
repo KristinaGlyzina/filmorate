@@ -46,10 +46,10 @@ public class FilmService {
         }
 
         if (likeToDelete == null) {
-            throw new ValidationException("User has not liked this film.");
+            throw new ValidationException("The user has not liked this film.");
         }
         film.getLikes().remove(likeToDelete);
-        log.info("Like deleted.");
+        log.info("The like deleted.");
     }
 
     public List<Film> getTopLikedFilms(int count) throws ValidationException {
