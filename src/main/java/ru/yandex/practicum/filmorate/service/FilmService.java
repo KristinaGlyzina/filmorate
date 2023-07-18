@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Like;
@@ -20,7 +21,7 @@ public class FilmService {
     }
 
     public void addLike(Integer filmId, Integer userId) throws ValidationException {
-        Film film = filmStorage.findFilmById(filmId);
+        Film film = filmStorage.getFilmById(filmId);
 
         if (hasLiked(film, userId)) {
             throw new ValidationException("User has already liked the film.");
@@ -34,8 +35,8 @@ public class FilmService {
         log.info("Like added.");
     }
 
-    public void deleteLike(Integer filmId, Integer userId) throws ValidationException {
-        Film film = filmStorage.findFilmById(filmId);
+    public void deleteLike(Integer filmId, Integer userId) throws ObjectNotFoundException {
+        Film film = filmStorage.getFilmById(filmId);
 
         Like likeToDelete = null;
         for (Like like : film.getLikes()) {
@@ -46,7 +47,7 @@ public class FilmService {
         }
 
         if (likeToDelete == null) {
-            throw new ValidationException("The user has not liked this film.");
+            throw new ObjectNotFoundException("The user has not liked this film.");
         }
         film.getLikes().remove(likeToDelete);
         log.info("The like deleted.");

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.filmStorage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -50,7 +51,7 @@ public class InMemoryFilmStorage {
         return film;
     }
 
-    public Film updateFilm(Film updatedFilm) throws ValidationException {
+    public Film updateFilm(Film updatedFilm) throws ValidationException, ObjectNotFoundException {
 
         if (updatedFilm.getName() == null || updatedFilm.getName().isEmpty()) {
             log.error("Film title cannot be empty.");
@@ -78,7 +79,7 @@ public class InMemoryFilmStorage {
 
         if (existingFilm == null) {
             log.error("Film not found: {}.", updatedFilmId);
-            throw new ValidationException("Film not found.");
+            throw new ObjectNotFoundException("Film not found.");
         }
         existingFilm.setId(updatedFilm.getId());
         existingFilm.setName(updatedFilm.getName());
@@ -93,20 +94,19 @@ public class InMemoryFilmStorage {
         return existingFilm;
     }
 
-    public List<Film> getAllFilms() throws ValidationException {
+    public List<Film> getAllFilms() {
         List<Film> films = new ArrayList<>(filmMap.values());
         if (films.isEmpty()) {
-            log.error("List of films is empty.");
-            throw new ValidationException("List of films is empty.");
+            throw new ObjectNotFoundException("List of films is empty.");
         }
         return films;
     }
 
-    public Film findFilmById(int id) throws ValidationException {
+    public Film getFilmById(int id) throws ObjectNotFoundException {
         return filmMap.values().stream()
                 .filter(film -> film.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new ValidationException("Film not found."));
+                .orElseThrow(() -> new ObjectNotFoundException("Film not found."));
     }
 
     public int getNextId() {

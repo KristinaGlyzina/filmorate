@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.userStorage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -38,8 +39,14 @@ public class InMemoryUserStorage {
             throw new ValidationException("Invalid birth date.");
         }
 
-        int id = getNextId();
-        user.setId(id);
+        if (user.getId() != null) {
+            user.setId(user.getId());
+        } else {
+            int id = getNextId();
+            user.setId(id);
+        }
+
+
         userMap.put(user.getId(), user);
 
         log.info("User created: {}.", user);
@@ -47,23 +54,23 @@ public class InMemoryUserStorage {
         return user;
     }
 
-    public User updateUser(User updatedUser) throws ValidationException {
+    public User updateUser(User updatedUser) throws ObjectNotFoundException {
         int updatedUserId = updatedUser.getId();
         User existingUser = userMap.get(updatedUserId);
 
         if (existingUser == null) {
             log.error("User not found: {}.", updatedUserId);
-            throw new ValidationException("User not found.");
+            throw new ObjectNotFoundException("User not found.");
         }
 
         if (updatedUser.getEmail() == null || updatedUser.getEmail().isEmpty() || !updatedUser.getEmail().contains("@")) {
             log.error("Invalid email: {}.", updatedUser.getEmail());
-            throw new ValidationException("Invalid email.");
+            throw new ObjectNotFoundException("Invalid email.");
         }
 
         if (updatedUser.getLogin() == null || updatedUser.getLogin().isEmpty() || updatedUser.getLogin().contains(" ")) {
             log.error("Invalid login: {}.", updatedUser.getLogin());
-            throw new ValidationException("Invalid login.");
+            throw new ObjectNotFoundException("Invalid login.");
         }
 
         existingUser.setEmail(updatedUser.getEmail());
@@ -81,11 +88,11 @@ public class InMemoryUserStorage {
         return users;
     }
 
-    public User findUserById(Integer id) throws ValidationException {
+    public User getUserById(Integer id) throws ObjectNotFoundException {
         return userMap.values().stream()
                 .filter(user -> user.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new ValidationException("User not found."));
+                .orElseThrow(() -> new ObjectNotFoundException("User not found."));
     }
 
     private int getNextId() {
