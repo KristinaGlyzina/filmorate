@@ -96,9 +96,6 @@ public class InMemoryFilmStorage {
 
     public List<Film> getAllFilms() {
         List<Film> films = new ArrayList<>(filmMap.values());
-        if (films.isEmpty()) {
-            throw new ObjectNotFoundException("List of films is empty.");
-        }
         return films;
     }
 

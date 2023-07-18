@@ -83,19 +83,20 @@ public class UserService {
         List<User> userFriends = new ArrayList<>();
         for (Integer id : userFriendsIds) {
             User friend = userStorage.getUserById(id);
-            if (friend != null || friend.getId() != user.getId() || friend.getId() != otherUser.getId()) {
+            if (friend != null && friend.getId() != user.getId() && friend.getId() != otherUser.getId()) {
                 userFriends.add(friend);
             }
         }
 
-        Set<Integer> otherUserFriendsIds = user.getFriends();
+        Set<Integer> otherUserFriendsIds = otherUser.getFriends();
         List<User> otherUserFriends = new ArrayList<>();
         for (Integer id : otherUserFriendsIds) {
             User friend = userStorage.getUserById(id);
-            if (friend != null || friend.getId() != user.getId() || friend.getId() != otherUser.getId()) {
+            if (friend != null && friend.getId() != user.getId() && friend.getId() != otherUser.getId()) {
                 otherUserFriends.add(friend);
             }
         }
+
         List<User> commonFriends = new ArrayList<>(userFriends);
         commonFriends.retainAll(otherUserFriends);
 

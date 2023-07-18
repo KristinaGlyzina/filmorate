@@ -53,10 +53,12 @@ public class FilmService {
         log.info("The like deleted.");
     }
 
-    public List<Film> getTopLikedFilms(int count) throws ValidationException {
+    public List<Film> getTopLikedFilms(int count) {
         List<Film> sortedFilms = new ArrayList<>(filmStorage.getAllFilms());
         sortedFilms.sort(Comparator.comparingInt(film -> film.getLikes().size()));
-        Collections.reverse(sortedFilms);
+        if (sortedFilms.size() > count) {
+            sortedFilms = sortedFilms.subList(sortedFilms.size() - count, sortedFilms.size());
+        }
         return sortedFilms;
     }
 
