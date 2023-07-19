@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
@@ -13,13 +14,10 @@ import java.util.Set;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private InMemoryUserStorage userStorage;
-
-    public UserService(InMemoryUserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
 
     public void addFriend(Integer userId, Integer friendId) throws ObjectNotFoundException {
         User user = userStorage.getUserById(userId);
