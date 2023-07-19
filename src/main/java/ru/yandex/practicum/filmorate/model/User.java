@@ -8,10 +8,10 @@ import java.util.Set;
 
 @Data
 public class User {
-    Integer id;
-    String email;
-    String login;
-    String name;
-    LocalDate birthday;
-    Set<Integer> friends = new HashSet<>();
+    private Integer id;
+    private String email;
+    private String login;
+    private String name;
+    private LocalDate birthday;
+    private Set<Integer> friends = new HashSet<>();
 }
