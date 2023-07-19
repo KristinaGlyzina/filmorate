@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
@@ -14,9 +13,12 @@ import java.util.*;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class FilmService {
     private final InMemoryFilmStorage filmStorage;
+
+    public FilmService(InMemoryFilmStorage filmStorage) {
+        this.filmStorage = filmStorage;
+    }
 
 
     public void addLike(Integer filmId, Integer userId) throws ValidationException {

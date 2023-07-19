@@ -14,10 +14,13 @@ import java.util.Set;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private InMemoryUserStorage userStorage;
+
+    public UserService(InMemoryUserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
 
     public void addFriend(Integer userId, Integer friendId) throws ObjectNotFoundException {
         User user = userStorage.getUserById(userId);
