@@ -44,6 +44,7 @@ public class FilmControllerTest {
     @Test
     public void addFilmWithInvalidName() {
         film.setName("");
+
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
         assertEquals(0, filmController.getFilms().size());
     }
@@ -51,6 +52,7 @@ public class FilmControllerTest {
     @Test
     public void addFilmWithZeroDuration() {
         film.setDuration(0);
+
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
         assertEquals(0, filmController.getFilms().size());
     }
@@ -58,6 +60,7 @@ public class FilmControllerTest {
     @Test
     public void addFilmWithNegativeDuration() {
         film.setDuration(-1);
+
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
         assertEquals(0, filmController.getFilms().size());
     }
