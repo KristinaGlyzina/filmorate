@@ -36,6 +36,7 @@ public class UserControllerTest {
     @Test
     public void addUserWithValidData() {
         User createdUser = userController.createUser(user);
+
         assertEquals(user, createdUser);
         assertEquals(1, userController.getUsers().size());
     }
