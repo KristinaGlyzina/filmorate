@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storages.friend.FriendStorage;
 import ru.yandex.practicum.filmorate.storages.user.UserStorage;
@@ -50,12 +48,5 @@ public class UserService {
             }
         }
         return commonFriends;
-    }
-    public void test(int id) {
-        if (id != 1) {
-            throw new ValidationException("ошибка");
-        } else {
-            throw new ObjectNotFoundException("ошибка");
-        }
     }
 }
