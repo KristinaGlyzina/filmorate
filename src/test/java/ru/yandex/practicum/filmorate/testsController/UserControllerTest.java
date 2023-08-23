@@ -35,9 +35,7 @@ public class UserControllerTest {
 
     @Test
     public void addUserWithValidData() {
-
         User createdUser = userController.createUser(user);
-
         assertEquals(user, createdUser);
         assertEquals(1, userController.getUsers().size());
     }
@@ -70,5 +68,4 @@ public class UserControllerTest {
         assertThrows(ValidationException.class, () -> userController.createUser(user));
         assertEquals(0, userController.getUsers().size());
     }
-
 }
