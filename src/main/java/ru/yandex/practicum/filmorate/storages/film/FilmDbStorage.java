@@ -46,7 +46,7 @@ public class FilmDbStorage implements FilmStorage {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
                 .usingGeneratedKeyColumns("id");
-        film.setId(simpleJdbcInsert.executeAndReturnKey(film.toMap()).longValue());
+        film.setId(simpleJdbcInsert.executeAndReturnKey(film.filmToMap()).longValue());
         film.setMpa(mpaService.getMpaById(film.getMpa().getId()));
         if (film.getGenres() != null) {
             for (Genre genre : film.getGenres()) {

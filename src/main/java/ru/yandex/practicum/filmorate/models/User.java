@@ -30,12 +30,12 @@ public class User {
         }
     }
 
-    public Map<String, Object> toMap() {
-        Map<String, Object> values = new HashMap<>();
-        values.put("email", email);
-        values.put("login", login);
-        values.put("name", name);
-        values.put("birthday", birthday);
-        return values;
+    public Map<String, Object> userToMap() {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("email", email);
+        userMap.put("login", login);
+        userMap.put("name", name);
+        userMap.put("birthday", birthday);
+        return userMap;
     }
 }
