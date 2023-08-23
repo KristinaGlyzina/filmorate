@@ -8,7 +8,9 @@ import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storages.friend.FriendStorage;
 import ru.yandex.practicum.filmorate.storages.user.UserStorage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Slf4j
 @Service
@@ -24,12 +26,9 @@ public class UserService {
 
     public void addFriend(Long userId, Long friendId) {
         friendStorage.addFriend(userId, friendId);
-        userStorage.updateUser(userStorage.getUserById(userId));
-        userStorage.updateUser(userStorage.getUserById(userId));
     }
 
     public void deleteFriend(Long userId, Long friendId) {
-
         friendStorage.deleteFriend(userId, friendId);
     }
 
