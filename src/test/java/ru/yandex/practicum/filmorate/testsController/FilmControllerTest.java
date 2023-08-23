@@ -26,13 +26,10 @@ public class FilmControllerTest {
     private UserStorage userStorage;
     private LikeStorage likeStorage;
 
-
-
     @BeforeEach
     public void beforeEach() {
         filmStorage = new InMemoryFilmStorage();
         userStorage = new InMemoryUserStorage();
-
 
         filmController = new FilmController(filmStorage, new FilmService(filmStorage, userStorage, null));
         film = Film.builder()
@@ -43,6 +40,7 @@ public class FilmControllerTest {
                 .duration(154)
                 .build();
     }
+
     @Test
     public void addFilmWithValidData() {
         Film createdFilm = filmController.createFilm(film);
