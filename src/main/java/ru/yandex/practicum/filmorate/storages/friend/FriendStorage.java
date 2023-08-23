@@ -50,6 +50,7 @@ public class FriendStorage {
         }
     }
 
+
     public List<User> getFriends(Long userId) {
         User user = userStorage.getUserById(userId);
         if (user != null) {
