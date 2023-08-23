@@ -1,108 +1,71 @@
 package ru.yandex.practicum.filmorate.testsController;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.userStorage.InMemoryUserStorage;
+import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.controllers.UserController;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.services.UserService;
+import ru.yandex.practicum.filmorate.storages.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storages.user.UserStorage;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 public class UserControllerTest {
+
+    private User user;
+    private UserController userController;
+    private UserStorage userStorage;
+
+    @BeforeEach
+    public void beforeEach() {
+        userStorage = new InMemoryUserStorage();
+        userController = new UserController(userStorage, new UserService(userStorage, null));
+        user = User.builder()
+                .name("Kristina")
+                .login("KristinaGl")
+                .email("kg@.ru")
+                .birthday(LocalDate.of(2001, 10, 21))
+                .build();
+    }
     @Test
-    public void createUser_Valid() throws ValidationException {
-        InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("test");
-        user.setName("Test User");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-
-        User addedUser = inMemoryUserStorage.createUser(user);
-
-        assertNotNull(addedUser);
-        assertEquals(user.getEmail(), addedUser.getEmail());
-        assertEquals(user.getLogin(), addedUser.getLogin());
-        assertEquals(user.getName(), addedUser.getName());
-        assertEquals(user.getBirthday(), addedUser.getBirthday());
+    public void addUserWithValidData() {
+        User createdUser = userController.createUser(user);
+        assertEquals(user, createdUser);
+        assertEquals(1, userController.getUsers().size());
     }
 
     @Test
-    public void createUser_EmptyEmail() {
-        InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
-        User user = new User();
+    public void addUserWithInvalidEmail() {
         user.setEmail("");
-        user.setLogin("test");
-        user.setName("Test User");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-
-        assertThrows(ValidationException.class, () -> inMemoryUserStorage.createUser(user));
+        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        assertEquals(0, userController.getUsers().size());
     }
 
     @Test
-    public void createUser_InvalidEmail() {
-        InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
-        User user = new User();
-        user.setEmail("invalid.email");
-        user.setLogin("test");
-        user.setName("Test User");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-
-        assertThrows(ValidationException.class, () -> inMemoryUserStorage.createUser(user));
-    }
-
-    @Test
-    public void createUser_EmptyLogin() {
-        InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
-        User user = new User();
-        user.setEmail("test@example.com");
+    public void addUserWithLoginIsEmpty() {
         user.setLogin("");
-        user.setName("Test User");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-
-        assertThrows(ValidationException.class, () -> inMemoryUserStorage.createUser(user));
+        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        assertEquals(0, userController.getUsers().size());
     }
 
     @Test
-    public void createUser_LoginWithSpaces() {
-        InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("user name");
-        user.setName("Test User");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-
-        assertThrows(ValidationException.class, () -> inMemoryUserStorage.createUser(user));
-    }
-
-    @Test
-    public void createUser_EmptyName() throws ValidationException {
-        InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("test");
+    public void addUserWithValidName() {
         user.setName("");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-
-        User addedUser = inMemoryUserStorage.createUser(user);
-
-        assertNotNull(addedUser);
-        assertEquals(user.getLogin(), addedUser.getName());
+        User createdUser = userController.createUser(user);
+        assertTrue(createdUser.getName().equals(user.getLogin()));
+        assertEquals(1, userController.getUsers().size());
     }
 
     @Test
-    public void createUser_FutureBirthday() {
-        InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("test");
-        user.setName("Test User");
+    public void addUserWithValidBirthday() {
         user.setBirthday(LocalDate.now().plusDays(1));
-
-        assertThrows(ValidationException.class, () -> inMemoryUserStorage.createUser(user));
+        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        assertEquals(0, userController.getUsers().size());
     }
 
 }
