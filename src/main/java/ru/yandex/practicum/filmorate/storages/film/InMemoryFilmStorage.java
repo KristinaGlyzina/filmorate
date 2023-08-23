@@ -115,7 +115,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         return deletedFilm;
     }
 
-
     public List<Film> getAllFilms() {
         List<Film> films = new ArrayList<>(filmMap.values());
         return films;

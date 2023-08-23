@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.services.MpaService;
 import java.util.HashSet;
 import java.util.List;
 
-
 @Component
 public class LikeStorage {
     private final JdbcTemplate jdbcTemplate;
