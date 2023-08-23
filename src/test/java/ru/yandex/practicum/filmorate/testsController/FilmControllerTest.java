@@ -41,10 +41,8 @@ public class FilmControllerTest {
                 .build();
     }
 
-
     @Test
     public void addFilmWithInvalidName() {
-
         film.setName("");
 
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
