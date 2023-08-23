@@ -29,7 +29,6 @@ public class FilmControllerTest {
     public void beforeEach() {
         filmStorage = new InMemoryFilmStorage();
         userStorage = new InMemoryUserStorage();
-
         filmController = new FilmController(filmStorage, new FilmService(filmStorage, userStorage, null));
         film = Film.builder()
                 .name("Pulp Fiction")
@@ -40,12 +39,9 @@ public class FilmControllerTest {
                 .build();
     }
 
-
     @Test
     public void addFilmWithInvalidName() {
-
         film.setName("");
-
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
         assertEquals(0, filmController.getFilms().size());
     }
