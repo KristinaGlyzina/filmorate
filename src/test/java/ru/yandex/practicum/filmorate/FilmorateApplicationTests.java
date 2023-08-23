@@ -97,7 +97,6 @@ class FilmorateApplicationTests {
 
     @Test
     public void createUserAndCheckGetUserById() {
-
         user = userStorage.createUser(user);
 
         Long userId = user.getId();
@@ -115,7 +114,6 @@ class FilmorateApplicationTests {
 
     @Test
     public void updateUserTest() {
-
         user = userStorage.createUser(user);
 
         user.setName("Petr");
@@ -155,7 +153,6 @@ class FilmorateApplicationTests {
 
     @Test
     public void createFilmTest() {
-
         film = filmStorage.createFilm(film);
 
         assertThat(film.getId())
@@ -188,7 +185,6 @@ class FilmorateApplicationTests {
 
     @Test
     public void deleteFilmTest() {
-
         film = filmStorage.createFilm(film);
 
         Film deletedFilm = film;
@@ -205,7 +201,6 @@ class FilmorateApplicationTests {
 
     @Test
     public void getAllFilmsTest() {
-
         film = filmStorage.createFilm(film);
         anotherFilm = filmStorage.createFilm(anotherFilm);
 
