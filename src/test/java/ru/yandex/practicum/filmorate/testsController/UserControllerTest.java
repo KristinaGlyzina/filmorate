@@ -31,8 +31,8 @@ public class UserControllerTest {
                 .email("kg@.ru")
                 .birthday(LocalDate.of(2001, 10, 21))
                 .build();
-    }
 
+    }
 
     @Test
     public void addUserWithValidData() {
