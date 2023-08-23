@@ -33,6 +33,7 @@ public class UserControllerTest {
                 .build();
     }
 
+
     @Test
     public void addUserWithValidData() {
         User createdUser = userController.createUser(user);
