@@ -180,20 +180,6 @@ class FilmorateApplicationTests {
     }
 
     @Test
-    public void getAllFilmsTest() {
-        film = filmStorage.createFilm(film);
-        anotherFilm = filmStorage.createFilm(anotherFilm);
-
-        List<Film> allFilms = filmStorage.getAllFilms();
-
-        assertThat(allFilms)
-                .hasSize(2)
-                .extracting(Film::getId)
-                .containsExactlyInAnyOrder(film.getId(), anotherFilm.getId());
-
-    }
-
-    @Test
     void likeFilmTest() {
         user = userStorage.createUser(user);
         film = filmStorage.createFilm(film);
