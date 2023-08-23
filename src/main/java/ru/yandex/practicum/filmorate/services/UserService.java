@@ -41,7 +41,7 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(Long userId, Long friendId) {
-       List<User> userFriends = friendStorage.getFriends(userId);
+        List<User> userFriends = friendStorage.getFriends(userId);
         List<User> friendFriends = friendStorage.getFriends(friendId);
 
         List<User> commonFriends = new ArrayList<>();
@@ -52,5 +52,4 @@ public class UserService {
         }
         return commonFriends;
     }
-
 }
