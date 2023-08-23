@@ -93,8 +93,6 @@ class FilmorateApplicationTests {
         anotherFilm.setGenres(new HashSet<>(Arrays.asList(
                 new Genre(1, "Комедия")
         )));
-
-
     }
 
     @Test
