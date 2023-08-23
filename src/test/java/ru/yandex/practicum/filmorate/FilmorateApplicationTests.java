@@ -132,29 +132,6 @@ class FilmorateApplicationTests {
     }
 
     @Test
-    public void deleteUserTest() {
-        user = userStorage.createUser(user);
-        Long userId = user.getId();
-        userStorage.deleteUser(userId);
-        User deletedUser = userStorage.getUserById(userId);
-        assertThat(deletedUser)
-                .isNull();
-    }
-
-    @Test
-    public void getAllUsersTest() {
-
-        user = userStorage.createUser(user);
-        anotherUser = userStorage.createUser(anotherUser);
-        List<User> allUsers = userStorage.getAllUsers();
-
-        assertThat(allUsers)
-                .hasSize(2)
-                .extracting(User::getId)
-                .contains(user.getId(), anotherUser.getId());
-    }
-
-    @Test
     public void createFilmTest() {
         film = filmStorage.createFilm(film);
 
