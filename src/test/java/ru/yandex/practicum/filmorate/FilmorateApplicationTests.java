@@ -96,6 +96,7 @@ class FilmorateApplicationTests {
 
 
     }
+
     @Test
     public void createUserAndCheckGetUserById() {
 
@@ -141,6 +142,7 @@ class FilmorateApplicationTests {
         assertThat(deletedUser)
                 .isNull();
     }
+
     @Test
     public void getAllUsersTest() {
         user = userStorage.createUser(user);
@@ -263,6 +265,7 @@ class FilmorateApplicationTests {
                 .first()
                 .hasFieldOrPropertyWithValue("id", film.getId());
     }
+
     @Test
     void addFriendTest() {
         user = userStorage.createUser(user);
