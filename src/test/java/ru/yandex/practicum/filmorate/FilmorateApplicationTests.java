@@ -44,6 +44,7 @@ class FilmorateApplicationTests {
 
     @BeforeEach
     public void setUp() {
+
         user = User.builder()
                 .name("Ivan")
                 .login("grandMaster")
