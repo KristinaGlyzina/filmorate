@@ -97,6 +97,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void createUserAndCheckGetUserById() {
+
         user = userStorage.createUser(user);
 
         Long userId = user.getId();
@@ -141,6 +142,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void getAllUsersTest() {
+
         user = userStorage.createUser(user);
         anotherUser = userStorage.createUser(anotherUser);
         List<User> allUsers = userStorage.getAllUsers();
@@ -261,6 +263,7 @@ class FilmorateApplicationTests {
 
     @Test
     void addFriendTest() {
+
         user = userStorage.createUser(user);
         anotherUser = userStorage.createUser(anotherUser);
 
