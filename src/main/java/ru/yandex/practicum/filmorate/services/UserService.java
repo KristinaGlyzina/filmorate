@@ -25,7 +25,6 @@ public class UserService {
 
     public void addFriend(Long userId, Long friendId) {
         friendStorage.addFriend(userId, friendId);
-        System.out.println("🔴");
     }
 
     public void deleteFriend(Long userId, Long friendId) {
