@@ -15,7 +15,7 @@ public class InMemoryUserStorage implements UserStorage {
     private Map<Long, User> userMap = new HashMap<>();
     private long nextId = 1;
 
-    public User createUser(User user) throws ValidationException {
+    public User create(User user) throws ValidationException {
         if (user.getEmail() == null || user.getEmail().isEmpty() || !user.getEmail().contains("@")) {
             log.error("Invalid email: {}.", user.getEmail());
             throw new ValidationException("Invalid email.");
@@ -51,7 +51,7 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    public User updateUser(User updatedUser) throws ObjectNotFoundException {
+    public User update(User updatedUser) throws ObjectNotFoundException {
         if (updatedUser == null) {
             throw new IllegalArgumentException("User id cannot be null");
         }
@@ -91,7 +91,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User deleteUser(Long userId) {
+    public User delete(Long userId) {
         if (userId == null) {
             throw new IllegalArgumentException("User id cannot be null");
         }

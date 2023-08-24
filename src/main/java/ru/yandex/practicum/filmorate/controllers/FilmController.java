@@ -23,13 +23,13 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film createFilm(@RequestBody Film film) {
-        return filmStorage.createFilm(film);
+    public Film create(@RequestBody Film film) {
+        return filmStorage.create(film);
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
-        return filmStorage.updateFilm(film);
+    public Film update(@RequestBody Film film) {
+        return filmStorage.update(film);
     }
 
     @GetMapping("/{id}")
@@ -55,8 +55,8 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}")
-    public Film deleteFilm(@PathVariable Long id) {
-        return filmStorage.deleteFilm(id);
+    public Film delete(@PathVariable Long id) {
+        return filmStorage.delete(id);
     }
 
     @GetMapping

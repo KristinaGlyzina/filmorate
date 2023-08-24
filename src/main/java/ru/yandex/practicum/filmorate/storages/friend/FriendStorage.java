@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 public class FriendStorage {
     private final JdbcTemplate jdbcTemplate;
-    private UserStorage userStorage;
+    private final UserStorage userStorage;
 
     @Autowired
     public FriendStorage(JdbcTemplate jdbcTemplate, @Qualifier("userDbStorage") UserStorage userStorage) {

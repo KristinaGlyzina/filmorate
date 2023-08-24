@@ -29,7 +29,7 @@ public class FilmControllerTest {
     public void beforeEach() {
         filmStorage = new InMemoryFilmStorage();
         userStorage = new InMemoryUserStorage();
-        filmController = new FilmController(filmStorage, new FilmService(filmStorage, userStorage, null));
+        filmController = new FilmController(filmStorage, new FilmService(filmStorage, userStorage,  null));
         film = Film.builder()
                 .name("Pulp Fiction")
                 .description("American crime film written and directed by Quentin Tarantino, " +
@@ -43,7 +43,7 @@ public class FilmControllerTest {
     public void addFilmWithInvalidName() {
         film.setName("");
 
-        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
+        assertThrows(ValidationException.class, () -> filmController.create(film));
 
         assertEquals(0, filmController.getFilms().size());
     }
@@ -52,7 +52,7 @@ public class FilmControllerTest {
     public void addFilmWithZeroDuration() {
         film.setDuration(0);
 
-        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
+        assertThrows(ValidationException.class, () -> filmController.create(film));
         assertEquals(0, filmController.getFilms().size());
     }
 
@@ -60,7 +60,7 @@ public class FilmControllerTest {
     public void addFilmWithNegativeDuration() {
         film.setDuration(-1);
 
-        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
+        assertThrows(ValidationException.class, () -> filmController.create(film));
         assertEquals(0, filmController.getFilms().size());
     }
 }

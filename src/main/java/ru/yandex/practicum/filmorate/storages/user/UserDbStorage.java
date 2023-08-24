@@ -25,7 +25,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User createUser(User user) {
+    public User create(User user) {
         validateUser(user);
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
@@ -36,7 +36,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User updateUser(User user) {
+    public User update(User user) {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
@@ -80,7 +80,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User deleteUser(Long userId) {
+    public User delete(Long userId) {
         if (userId == null) {
             throw new IllegalArgumentException("User id cannot be null");
         }

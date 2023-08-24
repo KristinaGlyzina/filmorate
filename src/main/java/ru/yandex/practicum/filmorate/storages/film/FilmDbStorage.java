@@ -24,9 +24,9 @@ import java.util.stream.Collectors;
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private MpaService mpaService;
-    private GenreService genreService;
-    private LikeStorage likeStorage;
+    private final MpaService mpaService;
+    private final GenreService genreService;
+    private final LikeStorage likeStorage;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, MpaService mpaService, GenreService genreService,
@@ -38,7 +38,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film createFilm(Film film) {
+    public Film create(Film film) {
         if (film == null) {
             throw new ValidationException("Empty object.");
         }
@@ -58,7 +58,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film updateFilm(Film film) {
+    public Film update(Film film) {
         if (film == null) {
             throw new ValidationException("Empty object.");
         }
@@ -117,7 +117,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film deleteFilm(Long filmId) {
+    public Film delete(Long filmId) {
         if (filmId == null) {
             throw new ValidationException("Empty object.");
         }

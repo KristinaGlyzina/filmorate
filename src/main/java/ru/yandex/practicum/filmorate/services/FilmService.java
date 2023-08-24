@@ -3,6 +3,9 @@ package ru.yandex.practicum.filmorate.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exceptions.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
@@ -26,6 +29,19 @@ public class FilmService {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.likeStorage = likeStorage;
+    }
+
+    public Film create(@RequestBody Film film) {
+        return filmStorage.create(film);
+    }
+
+    public Film update(@RequestBody Film film) {
+        return filmStorage.update(film);
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable Long id) {
+        return filmStorage.getFilmById(id);
     }
 
     public void likeFilm(Long filmId, Long userId) {

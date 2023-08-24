@@ -99,29 +99,26 @@ class FilmorateApplicationTests {
     @Test
     public void createUserAndCheckGetUserById() {
 
-        user = userStorage.createUser(user);
+        user = userStorage.create(user);
 
         Long userId = user.getId();
 
         User retrievedUser = userStorage.getUserById(userId);
 
-        Optional<User> userOptional = Optional.ofNullable(retrievedUser);
-
-        assertThat(userOptional)
-                .isPresent()
-                .hasValueSatisfying(user ->
-                        assertThat(user).hasFieldOrPropertyWithValue("id", userId)
-                );
+        assertThat(retrievedUser)
+                .isNotNull()
+                .extracting(User::getId)
+                .isEqualTo(userId);
     }
 
     @Test
     public void updateUserTest() {
-        user = userStorage.createUser(user);
+        user = userStorage.create(user);
 
         user.setName("Petr");
         user.setEmail("petr@mail.ru");
 
-        user = userStorage.updateUser(user);
+        user = userStorage.update(user);
 
         User updatedUser = userStorage.getUserById(user.getId());
 
@@ -133,7 +130,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void createFilmTest() {
-        film = filmStorage.createFilm(film);
+        film = filmStorage.create(film);
 
         assertThat(film.getId())
                 .isNotNull();
@@ -141,10 +138,10 @@ class FilmorateApplicationTests {
 
     @Test
     public void updateFilmTest() {
-        film = filmStorage.createFilm(film);
+        film = filmStorage.create(film);
 
         film.setName("New name");
-        film = filmStorage.updateFilm(film);
+        film = filmStorage.update(film);
 
         Film updatedFilm = filmStorage.getFilmById(film.getId());
 
@@ -154,7 +151,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void getFilmByIdTest() {
-        film = filmStorage.createFilm(film);
+        film = filmStorage.create(film);
 
         Film gotFilm = filmStorage.getFilmById(film.getId());
 
@@ -165,11 +162,11 @@ class FilmorateApplicationTests {
 
     @Test
     public void deleteFilmTest() {
-        film = filmStorage.createFilm(film);
+        film = filmStorage.create(film);
 
         Film deletedFilm = film;
 
-        filmStorage.deleteFilm(film.getId());
+        filmStorage.delete(film.getId());
 
         assertThat(deletedFilm)
                 .isNotNull();
@@ -181,8 +178,8 @@ class FilmorateApplicationTests {
 
     @Test
     void likeFilmTest() {
-        user = userStorage.createUser(user);
-        film = filmStorage.createFilm(film);
+        user = userStorage.create(user);
+        film = filmStorage.create(film);
 
         filmService.likeFilm(film.getId(), user.getId());
 
@@ -193,8 +190,8 @@ class FilmorateApplicationTests {
 
     @Test
     void deleteLikeTest() {
-        user = userStorage.createUser(user);
-        film = filmStorage.createFilm(film);
+        user = userStorage.create(user);
+        film = filmStorage.create(film);
 
         filmService.likeFilm(film.getId(), user.getId());
 
@@ -207,11 +204,11 @@ class FilmorateApplicationTests {
 
     @Test
     void getPopularFilmsTest() {
-        user = userStorage.createUser(user);
-        anotherUser = userStorage.createUser(anotherUser);
+        user = userStorage.create(user);
+        anotherUser = userStorage.create(anotherUser);
 
-        film = filmStorage.createFilm(film);
-        anotherFilm = filmStorage.createFilm(anotherFilm);
+        film = filmStorage.create(film);
+        anotherFilm = filmStorage.create(anotherFilm);
 
         filmService.likeFilm(film.getId(), user.getId());
         filmService.likeFilm(film.getId(), anotherUser.getId());
@@ -228,8 +225,8 @@ class FilmorateApplicationTests {
     @Test
     void addFriendTest() {
 
-        user = userStorage.createUser(user);
-        anotherUser = userStorage.createUser(anotherUser);
+        user = userStorage.create(user);
+        anotherUser = userStorage.create(anotherUser);
 
         userService.addFriend(user.getId(), anotherUser.getId());
 
@@ -239,8 +236,8 @@ class FilmorateApplicationTests {
 
     @Test
     void deleteFriendTest() {
-        user = userStorage.createUser(user);
-        anotherUser = userStorage.createUser(anotherUser);
+        user = userStorage.create(user);
+        anotherUser = userStorage.create(anotherUser);
 
         userService.addFriend(user.getId(), anotherUser.getId());
         userService.deleteFriend(user.getId(), anotherUser.getId());
@@ -251,9 +248,9 @@ class FilmorateApplicationTests {
 
     @Test
     void getCommonFriendsTest() {
-        user = userStorage.createUser(user);
-        anotherUser = userStorage.createUser(anotherUser);
-        commonFriend = userStorage.createUser(commonFriend);
+        user = userStorage.create(user);
+        anotherUser = userStorage.create(anotherUser);
+        commonFriend = userStorage.create(commonFriend);
 
         userService.addFriend(user.getId(), commonFriend.getId());
         userService.addFriend(anotherUser.getId(), commonFriend.getId());

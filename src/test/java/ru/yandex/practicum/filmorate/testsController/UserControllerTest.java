@@ -35,7 +35,7 @@ public class UserControllerTest {
 
     @Test
     public void addUserWithValidData() {
-        User createdUser = userController.createUser(user);
+        User createdUser = userController.create(user);
 
         assertEquals(user, createdUser);
         assertEquals(1, userController.getUsers().size());
@@ -45,7 +45,7 @@ public class UserControllerTest {
     public void addUserWithInvalidEmail() {
         user.setEmail("");
 
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        assertThrows(ValidationException.class, () -> userController.create(user));
         assertEquals(0, userController.getUsers().size());
     }
 
@@ -53,14 +53,14 @@ public class UserControllerTest {
     public void addUserWithLoginIsEmpty() {
         user.setLogin("");
 
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        assertThrows(ValidationException.class, () -> userController.create(user));
         assertEquals(0, userController.getUsers().size());
     }
 
     @Test
     public void addUserWithValidName() {
         user.setName("");
-        User createdUser = userController.createUser(user);
+        User createdUser = userController.create(user);
 
         assertTrue(createdUser.getName().equals(user.getLogin()));
         assertEquals(1, userController.getUsers().size());
@@ -70,7 +70,7 @@ public class UserControllerTest {
     public void addUserWithValidBirthday() {
         user.setBirthday(LocalDate.now().plusDays(1));
 
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        assertThrows(ValidationException.class, () -> userController.create(user));
         assertEquals(0, userController.getUsers().size());
     }
 }

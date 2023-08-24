@@ -15,7 +15,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     private long nextId = 1;
     private Map<Long, Film> filmMap = new HashMap<>();
 
-    public Film createFilm(Film film) throws ValidationException {
+    public Film create(Film film) throws ValidationException {
 
         if (film.getName() == null || film.getName().isEmpty()) {
             log.error("Film title cannot be empty.");
@@ -48,7 +48,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
-    public Film updateFilm(Film updatedFilm) throws ValidationException, ObjectNotFoundException {
+    public Film update(Film updatedFilm) throws ValidationException, ObjectNotFoundException {
 
         if (updatedFilm.getName() == null || updatedFilm.getName().isEmpty()) {
             log.error("Film title cannot be empty.");
@@ -102,7 +102,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return nextId++;
     }
 
-    public Film deleteFilm(Long filmId) {
+    public Film delete(Long filmId) {
         if (filmId == null) {
             throw new ValidationException("Film id cannot be null");
         }

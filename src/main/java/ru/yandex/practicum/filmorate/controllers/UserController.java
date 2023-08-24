@@ -23,13 +23,13 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userStorage.createUser(user);
+    public User create(@RequestBody User user) {
+        return userStorage.create(user);
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user) {
-        return userStorage.updateUser(user);
+    public User update(@RequestBody User user) {
+        return userStorage.update(user);
     }
 
     @GetMapping("/{id}")
@@ -58,8 +58,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public User deleteUser(@PathVariable Long id) {
-        return userStorage.deleteUser(id);
+    public User delete(@PathVariable Long id) {
+        return userStorage.delete(id);
     }
 
     @GetMapping
