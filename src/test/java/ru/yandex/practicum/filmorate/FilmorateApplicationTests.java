@@ -96,7 +96,7 @@ class FilmorateApplicationTests {
     }
 
     @Test
-    public void checkCreateUserAndGetUserById() {
+    public void checkCreateAndGetUserById() {
 
         user = userStorage.create(user);
 
