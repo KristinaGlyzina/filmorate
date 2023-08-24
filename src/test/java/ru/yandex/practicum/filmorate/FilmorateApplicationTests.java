@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @SpringBootTest
+@SuppressWarnings("CheckStyle")
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public
