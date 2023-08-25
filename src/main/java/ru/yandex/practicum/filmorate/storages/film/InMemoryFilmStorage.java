@@ -1,24 +1,21 @@
-package ru.yandex.practicum.filmorate.storage.filmStorage;
+package ru.yandex.practicum.filmorate.storages.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.exceptions.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.models.Film;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
-@Component
-public class InMemoryFilmStorage {
-    private int nextId = 1;
-    private Map<Integer, Film> filmMap = new HashMap<>();
+@Component("inMemoryFilmStorage")
+public class InMemoryFilmStorage implements FilmStorage {
+    private long nextId = 1;
+    private Map<Long, Film> filmMap = new HashMap<>();
 
-    public Film createFilm(Film film) throws ValidationException {
+    public Film create(Film film) throws ValidationException {
 
         if (film.getName() == null || film.getName().isEmpty()) {
             log.error("Film title cannot be empty.");
@@ -41,7 +38,7 @@ public class InMemoryFilmStorage {
             throw new ValidationException("Film duration should be greater than zero.");
         }
 
-        int id = getNextId();
+        Long id = getNextId();
         film.setId(id);
 
         filmMap.put(id, film);
@@ -51,7 +48,7 @@ public class InMemoryFilmStorage {
         return film;
     }
 
-    public Film updateFilm(Film updatedFilm) throws ValidationException, ObjectNotFoundException {
+    public Film update(Film updatedFilm) throws ValidationException, ObjectNotFoundException {
 
         if (updatedFilm.getName() == null || updatedFilm.getName().isEmpty()) {
             log.error("Film title cannot be empty.");
@@ -74,7 +71,7 @@ public class InMemoryFilmStorage {
             throw new ValidationException("Film duration should be greater than zero.");
         }
 
-        int updatedFilmId = updatedFilm.getId();
+        Long updatedFilmId = updatedFilm.getId();
         Film existingFilm = filmMap.get(updatedFilmId);
 
         if (existingFilm == null) {
@@ -94,19 +91,32 @@ public class InMemoryFilmStorage {
         return existingFilm;
     }
 
-    public List<Film> getAllFilms() {
-        List<Film> films = new ArrayList<>(filmMap.values());
-        return films;
-    }
-
-    public Film getFilmById(int id) throws ObjectNotFoundException {
+    public Film getFilmById(Long id) throws ObjectNotFoundException {
         return filmMap.values().stream()
                 .filter(film -> film.getId() == id)
                 .findFirst()
                 .orElseThrow(() -> new ObjectNotFoundException("Film not found."));
     }
 
-    public int getNextId() {
+    public Long getNextId() {
         return nextId++;
+    }
+
+    public Film delete(Long filmId) {
+        if (filmId == null) {
+            throw new ValidationException("Film id cannot be null");
+        }
+        Film deletedFilm = filmMap.remove(filmId);
+        if (deletedFilm == null) {
+            throw new ObjectNotFoundException("Film not found, id: " + filmId);
+        }
+        log.info("Film deleted: {}", deletedFilm);
+
+        return deletedFilm;
+    }
+
+    public List<Film> getAllFilms() {
+        List<Film> films = new ArrayList<>(filmMap.values());
+        return films;
     }
 }

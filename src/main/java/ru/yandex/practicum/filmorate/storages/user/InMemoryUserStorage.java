@@ -1,24 +1,21 @@
-package ru.yandex.practicum.filmorate.storage.userStorage;
+package ru.yandex.practicum.filmorate.storages.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.exceptions.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.models.User;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
-@Component
-public class InMemoryUserStorage {
-    private Map<Integer, User> userMap = new HashMap<>();
-    private int nextId = 1;
+@Component("inMemoryUserStorage")
+public class InMemoryUserStorage implements UserStorage {
+    private Map<Long, User> userMap = new HashMap<>();
+    private long nextId = 1;
 
-    public User createUser(User user) throws ValidationException {
+    public User create(User user) throws ValidationException {
         if (user.getEmail() == null || user.getEmail().isEmpty() || !user.getEmail().contains("@")) {
             log.error("Invalid email: {}.", user.getEmail());
             throw new ValidationException("Invalid email.");
@@ -42,7 +39,7 @@ public class InMemoryUserStorage {
         if (user.getId() != null) {
             user.setId(user.getId());
         } else {
-            int id = getNextId();
+            Long id = getNextId();
             user.setId(id);
         }
 
@@ -54,8 +51,11 @@ public class InMemoryUserStorage {
         return user;
     }
 
-    public User updateUser(User updatedUser) throws ObjectNotFoundException {
-        int updatedUserId = updatedUser.getId();
+    public User update(User updatedUser) throws ObjectNotFoundException {
+        if (updatedUser == null) {
+            throw new IllegalArgumentException("User id cannot be null");
+        }
+        Long updatedUserId = updatedUser.getId();
         User existingUser = userMap.get(updatedUserId);
 
         if (existingUser == null) {
@@ -83,19 +83,32 @@ public class InMemoryUserStorage {
         return existingUser;
     }
 
-    public List<User> getAllUsers() {
-        List<User> users = new ArrayList<>(userMap.values());
-        return users;
-    }
-
-    public User getUserById(Integer id) throws ObjectNotFoundException {
+    public User getUserById(Long id) throws ObjectNotFoundException {
         return userMap.values().stream()
                 .filter(user -> user.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new ObjectNotFoundException("User not found."));
     }
 
-    private int getNextId() {
+    @Override
+    public User delete(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User id cannot be null");
+        }
+        User deletedUser = userMap.remove(userId);
+        if (deletedUser == null) {
+            throw new ObjectNotFoundException("User not found, id: " + userId);
+        }
+        log.info("User with id {} successfully deleted", userId);
+        return deletedUser;
+    }
+
+    private Long getNextId() {
         return nextId++;
+    }
+
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>(userMap.values());
+        return users;
     }
 }

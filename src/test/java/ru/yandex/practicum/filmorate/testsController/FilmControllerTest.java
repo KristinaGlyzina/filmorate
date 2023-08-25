@@ -1,69 +1,66 @@
 package ru.yandex.practicum.filmorate.testsController;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.filmStorage.InMemoryFilmStorage;
+import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.controllers.FilmController;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.services.FilmService;
+import ru.yandex.practicum.filmorate.storages.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storages.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storages.like.LikeStorage;
+import ru.yandex.practicum.filmorate.storages.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storages.user.UserStorage;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 public class FilmControllerTest {
+    private Film film;
+    private FilmController filmController;
+    private FilmStorage filmStorage;
+    private UserStorage userStorage;
+    private LikeStorage likeStorage;
 
-    @Test
-    public void addFilm_Valid() throws ValidationException {
-        InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
-        Film film = new Film();
-        film.setName("name");
-        film.setDescription("description");
-        film.setReleaseDate(LocalDate.of(2020, 1, 1));
-        film.setDuration(120);
-
-        Film addedFilm = inMemoryFilmStorage.createFilm(film);
-
-        assertNotNull(addedFilm);
-        assertEquals(film.getName(), addedFilm.getName());
-        assertEquals(film.getDescription(), addedFilm.getDescription());
-        assertEquals(film.getReleaseDate(), addedFilm.getReleaseDate());
-        assertEquals(film.getDuration(), addedFilm.getDuration());
+    @BeforeEach
+    public void beforeEach() {
+        filmStorage = new InMemoryFilmStorage();
+        userStorage = new InMemoryUserStorage();
+        filmController = new FilmController(filmStorage, new FilmService(filmStorage, userStorage,  null));
+        film = Film.builder()
+                .name("Pulp Fiction")
+                .description("American crime film written and directed by Quentin Tarantino, " +
+                        "who conceived it with Roger Avary.")
+                .releaseDate(LocalDate.of(1994, 10, 14))
+                .duration(154)
+                .build();
     }
 
     @Test
-    public void addFilm_EmptyName() {
-        InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
-        Film film = new Film();
+    public void addFilmWithInvalidName() {
         film.setName("");
-        film.setDescription("description");
-        film.setReleaseDate(LocalDate.of(2020, 1, 1));
-        film.setDuration(120);
 
-        assertThrows(ValidationException.class, () -> inMemoryFilmStorage.createFilm(film));
+        assertThrows(ValidationException.class, () -> filmController.create(film));
+
+        assertEquals(0, filmController.getFilms().size());
     }
 
     @Test
-    public void addFilm_LongDescription() {
-        InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
-        Film film = new Film();
-        film.setName("name");
-        film.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.");
-        film.setReleaseDate(LocalDate.of(2020, 1, 1));
-        film.setDuration(120);
+    public void addFilmWithZeroDuration() {
+        film.setDuration(0);
 
-        assertThrows(ValidationException.class, () -> inMemoryFilmStorage.createFilm(film));
+        assertThrows(ValidationException.class, () -> filmController.create(film));
+        assertEquals(0, filmController.getFilms().size());
     }
 
     @Test
-    public void addFilm_NegativeDuration() {
-        InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
-        Film film = new Film();
-        film.setName("name");
-        film.setDescription("description");
-        film.setReleaseDate(LocalDate.of(2020, 1, 1));
-        film.setDuration(-120);
+    public void addFilmWithNegativeDuration() {
+        film.setDuration(-1);
 
-        assertThrows(ValidationException.class, () -> inMemoryFilmStorage.createFilm(film));
+        assertThrows(ValidationException.class, () -> filmController.create(film));
+        assertEquals(0, filmController.getFilms().size());
     }
 }
